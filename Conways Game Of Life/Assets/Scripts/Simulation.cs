@@ -48,18 +48,23 @@ public class Simulation : MonoBehaviour
         SimulationMainProcess();
     }
 
-    private void CreateCellsOnCLickCoordinates(Vector3Int coordinate)
+    private void CreateKillCellsOnCLickCoordinates(bool setCellsAlive = true)
     {
-        cells[coordinate.x, coordinate.y] = true;           // Center of click
-        cells[coordinate.x - 1, coordinate.y] = true;       // Left of click
-        cells[coordinate.x + 1, coordinate.y] = true;       // Right of click
-        cells[coordinate.x, coordinate.y - 1] = true;       // Top of click
-        cells[coordinate.x, coordinate.y + 1] = true;       // Down of click
-
-        cells[coordinate.x - 1, coordinate.y - 1] = true;   // Top Left of click
-        cells[coordinate.x + 1, coordinate.y - 1] = true;   // Top Right of click
-        cells[coordinate.x - 1, coordinate.y + 1] = true;   // Down Left of click
-        cells[coordinate.x + 1, coordinate.y + 1] = true;   // Down Right of click
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3Int coordinate = tileMapVisualizer.GetTileMap().WorldToCell(mouseWorldPos);
+        // Access with a cube diameter of 3 cells from the click center.
+        if (coordinate.x > offset && coordinate.y > offset && coordinate.x <= width - offset && coordinate.y <= height - offset)
+        {
+            for (int y = coordinate.y - 1; y <= coordinate.y + 1; y++)
+            {
+                for (int x = coordinate.x - 1; x <= coordinate.x + 1; x++)
+                {
+                    cells[x, y] = setCellsAlive;
+                    tileMapVisualizer.PaintLivingCellTile(new Vector3Int(x, y, 0), cells[x, y]);
+                }
+            }
+        }
+        
     }
 
 
@@ -161,14 +166,11 @@ public class Simulation : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int coordinate = tileMapVisualizer.GetTileMap().WorldToCell(mouseWorldPos);
-
-            if (coordinate.x > offset && coordinate.y > offset && coordinate.x <= width - offset && coordinate.y <= height - offset)
-            {
-                CreateCellsOnCLickCoordinates(coordinate);
-                tileMapVisualizer.PaintLivingCellTile(new Vector3Int(coordinate.x, coordinate.y, 0), cells[coordinate.x, coordinate.y]);
-            }
+             CreateKillCellsOnCLickCoordinates();
+        }
+        else if (Input.GetMouseButtonDown(1))
+        {
+            CreateKillCellsOnCLickCoordinates(false);
         }
     }
 
