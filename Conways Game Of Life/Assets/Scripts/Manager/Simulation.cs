@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class Simulation : MonoBehaviour
 {
@@ -48,28 +47,6 @@ public class Simulation : MonoBehaviour
         SimulationMainProcess();
     }
 
-    private void CreateKillCellsOnCLickCoordinates(bool setCellsAlive = true)
-    {
-        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3Int coordinate = tileMapVisualizer.GetTileMap().WorldToCell(mouseWorldPos);
-        // Access with a cube diameter of 3 cells from the click center.
-        if (coordinate.x > offset && coordinate.y > offset && coordinate.x <= width - offset && coordinate.y <= height - offset)
-        {
-            for (int y = coordinate.y - 1; y <= coordinate.y + 1; y++)
-            {
-                for (int x = coordinate.x - 1; x <= coordinate.x + 1; x++)
-                {
-                    cells[x, y] = setCellsAlive;
-                    tileMapVisualizer.PaintLivingCellTile(new Vector3Int(x, y, 0), cells[x, y]);
-                }
-            }
-        }
-        
-    }
-
-
-    
-
     // Main Functions
     private void SimulationMainProcess()
     {
@@ -80,6 +57,7 @@ public class Simulation : MonoBehaviour
             {
                 for (int x = 1; x <= width; x++)
                 {
+                    tileMapVisualizer.PaintLivingCellTile(new Vector3Int(x, y, 0), cells[x, y]); // for better visual effects in some cases
                     cells[x, y] = CheckLifeRules(CountNeighbours(x, y), cells[x, y]);
                     tileMapVisualizer.PaintLivingCellTile(new Vector3Int(x, y, 0), cells[x, y]);
                 }
@@ -153,7 +131,6 @@ public class Simulation : MonoBehaviour
         }
     }
 
-
     private void RebuildField()
     {
         tileMapVisualizer.ClearTiles();
@@ -161,6 +138,7 @@ public class Simulation : MonoBehaviour
         height = uiManager.GetFieldSizeUI()[1];
         tileMapVisualizer.CreateLivingAreaFrame(width, height);
     }
+
     // Creation types
     private void CreateLifeOnMouseClickPosition()
     {
@@ -171,6 +149,24 @@ public class Simulation : MonoBehaviour
         else if (Input.GetMouseButtonDown(1))
         {
             CreateKillCellsOnCLickCoordinates(false);
+        }
+    }
+
+    private void CreateKillCellsOnCLickCoordinates(bool setCellsAlive = true)
+    {
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3Int coordinate = tileMapVisualizer.GetTileMap().WorldToCell(mouseWorldPos);
+        // Access with a cube diameter of 3 cells from the click center.
+        if (coordinate.x > offset && coordinate.y > offset && coordinate.x <= width - offset && coordinate.y <= height - offset)
+        {
+            for (int y = coordinate.y - 1; y <= coordinate.y + 1; y++)
+            {
+                for (int x = coordinate.x - 1; x <= coordinate.x + 1; x++)
+                {
+                    cells[x, y] = setCellsAlive;
+                    tileMapVisualizer.PaintLivingCellTile(new Vector3Int(x, y, 0), cells[x, y]);
+                }
+            }
         }
     }
 
@@ -213,5 +209,4 @@ public class Simulation : MonoBehaviour
             }
         }
     }
-
 }

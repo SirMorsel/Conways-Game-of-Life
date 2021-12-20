@@ -30,6 +30,24 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private int CheckInput(TMP_InputField inputField)
+    {
+        int convertedNumber;
+        bool success = int.TryParse(inputField.text, out convertedNumber);
+        if (success)
+        {
+            convertedNumber = Mathf.Clamp(convertedNumber, minSizeUI, maxSizeUI);
+            inputField.text = convertedNumber.ToString();
+            return convertedNumber;
+        }
+        else
+        {
+            Debug.LogWarning($"Not a number. Please just use positive integers. Default value is now selected {maxSizeUI}");
+            inputField.text = maxSizeUI.ToString();
+            return maxSizeUI;
+        }
+    }
+
     public void SetChanceOfLifeSlider(int value)
     {
         chanceOfLifeSlider.value = value;
@@ -56,25 +74,6 @@ public class UIManager : MonoBehaviour
     {
         widthField.text = x.ToString();
         heightField.text = y.ToString();
-    }
-
-
-    private int CheckInput(TMP_InputField inputField)
-    {
-        int convertedNumber;
-        bool success = int.TryParse(inputField.text, out convertedNumber);
-        if (success)
-        {
-            convertedNumber = Mathf.Clamp(convertedNumber, minSizeUI, maxSizeUI);
-            inputField.text = convertedNumber.ToString();
-            return convertedNumber;
-        }
-        else
-        {
-            Debug.LogWarning($"Not a number. Please just use positive integers. Default value is now selected {maxSizeUI}");
-            inputField.text = maxSizeUI.ToString();
-            return maxSizeUI;
-        }
     }
 
     public void SetFieldRangeUI(int min, int max)

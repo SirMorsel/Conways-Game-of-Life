@@ -39,7 +39,7 @@ public class TileMapVisualizer : MonoBehaviour
         {
             tilemap.SetTile(new Vector3Int(x, 0, 0), tileLivingSpaceFrame);
         }
-        for (int x = 0; x <= width + 1; x++)
+        for (int x = 0; x <= width + 1; x++) // Top Frame
         {
             tilemap.SetTile(new Vector3Int(x, height + 1, 0), tileLivingSpaceFrame);
         }
