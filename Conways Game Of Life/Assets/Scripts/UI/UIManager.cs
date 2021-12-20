@@ -82,4 +82,9 @@ public class UIManager : MonoBehaviour
         maxSizeUI = max;
     }
 
+    
+    public void CloseApplication()
+    {
+        Application.Quit();
+    }
 }

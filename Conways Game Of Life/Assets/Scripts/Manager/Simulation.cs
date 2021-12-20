@@ -113,7 +113,7 @@ public class Simulation : MonoBehaviour
         {
             return false;
         }
-        else if (countOfNeighbourCells == 3) // Born -> alive
+        else if (countOfNeighbourCells == 3) // (Re)Born -> alive
         {
             return true;
         }
@@ -192,6 +192,7 @@ public class Simulation : MonoBehaviour
     // Buttons
     public void RestartSimulation()
     {
+        KillAllLife();
         if (width != uiManager.GetFieldSizeUI()[0] || height != uiManager.GetFieldSizeUI()[1])
         {
             RebuildField();
