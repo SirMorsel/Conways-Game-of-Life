@@ -6,12 +6,12 @@ using Random = UnityEngine.Random;
 
 public class TileMapVisualizer : MonoBehaviour
 {
+    private static TileMapVisualizer _instance;
+    public static TileMapVisualizer Instance { get { return _instance; } }
+
     [SerializeField] private Tilemap tilemap;
     [SerializeField] private TileBase tileLivingCell;
     [SerializeField] private TileBase tileLivingSpaceFrame;
-
-    private static TileMapVisualizer _instance;
-    public static TileMapVisualizer Instance { get { return _instance; } }
 
     private void Awake()
     {

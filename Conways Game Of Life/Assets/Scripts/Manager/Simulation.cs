@@ -58,7 +58,7 @@ public class Simulation : MonoBehaviour
                 for (int x = 1; x <= width; x++)
                 {
                     tileMapVisualizer.PaintLivingCellTile(new Vector3Int(x, y, 0), cells[x, y]); // for better visual effects in some cases
-                    cells[x, y] = CheckLifeRules(CountNeighbours(x, y), cells[x, y]);
+                    cells[x, y] = RuleManager(x, y);
                     tileMapVisualizer.PaintLivingCellTile(new Vector3Int(x, y, 0), cells[x, y]);
                 }
             }
@@ -107,7 +107,7 @@ public class Simulation : MonoBehaviour
         return neighboursCount;
     }
 
-    private bool CheckLifeRules(int countOfNeighbourCells, bool stateOfCurrentCell)
+    private bool CheckNormalLifeRules(int countOfNeighbourCells, bool stateOfCurrentCell)
     {
         if (countOfNeighbourCells > 3) // Overpopulation -> die
         {
@@ -118,6 +118,62 @@ public class Simulation : MonoBehaviour
             return true;
         }
         else if (countOfNeighbourCells == 2 && stateOfCurrentCell) // Stay -> alive
+        {
+            return true;
+        }
+        else if (countOfNeighbourCells < 2) // too lonely -> die
+        {
+            return false;
+        }
+        else // default value if something went wrong
+        {
+            return false;
+        }
+    }
+
+    private bool CheckSpreadRightLifeRules(int countOfNeighbourCells, bool stateOfCurrentCell)
+    {
+        if (countOfNeighbourCells > 5) // Overpopulation -> die
+        {
+            return false;
+        }
+        else if (countOfNeighbourCells == 4) // (Re)Born -> alive
+        {
+            return true;
+        }
+        else if (countOfNeighbourCells == 2 || countOfNeighbourCells == 3 && stateOfCurrentCell) // Stay -> alive
+        {
+            return true;
+        }
+        else if (countOfNeighbourCells < 2) // too lonely -> die
+        {
+            return false;
+        }
+        else // default value if something went wrong
+        {
+            return false;
+        }
+    }
+
+    private bool CheckLazyLifeRules(int countOfNeighbourCells, bool stateOfCurrentCell)
+    {
+        if (countOfNeighbourCells > 6)
+        {
+            return true;
+        }
+        else if (countOfNeighbourCells == 5)
+        {
+            return false;
+        }
+        else if (countOfNeighbourCells == 4)
+        {
+            return true;
+        }
+        else if (countOfNeighbourCells == 3 && stateOfCurrentCell)
+        {
+            return true;
+        }
+        else if (countOfNeighbourCells == 2 && stateOfCurrentCell)
         {
             return true;
         }
@@ -168,6 +224,28 @@ public class Simulation : MonoBehaviour
                 }
             }
         }
+    }
+
+    private bool RuleManager(int x, int y)
+    {
+        bool stateOfCell = false;
+        switch (uiManager.GetRuleValue())
+        {
+            case 0:
+                stateOfCell = CheckNormalLifeRules(CountNeighbours(x, y), cells[x, y]);
+                break;
+            case 1:
+                stateOfCell = CheckSpreadRightLifeRules(CountNeighbours(x, y), cells[x, y]);
+                break;
+            case 2:
+                stateOfCell = CheckLazyLifeRules(CountNeighbours(x, y), cells[x, y]);
+                break;
+            default:
+                stateOfCell = CheckNormalLifeRules(CountNeighbours(x, y), cells[x, y]);
+                break;
+        }
+
+        return stateOfCell;
     }
 
     public void CreateRandomCells(int probabilityToCreateNewLife)

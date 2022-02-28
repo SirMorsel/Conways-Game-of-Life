@@ -6,17 +6,19 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
+    private static UIManager _instance;
+    public static UIManager Instance { get { return _instance; } }
+
     [SerializeField] TMP_Text chanceOfLifePercentText;
     [SerializeField] Slider chanceOfLifeSlider;
 
     [SerializeField] TMP_InputField widthField;
     [SerializeField] TMP_InputField heightField;
 
+    [SerializeField] TMP_Dropdown rulesDropdown;
+
     private int minSizeUI;
     private int maxSizeUI;
-
-    private static UIManager _instance;
-    public static UIManager Instance { get { return _instance; } }
 
     private void Awake()
     {
@@ -28,6 +30,11 @@ public class UIManager : MonoBehaviour
         {
             _instance = this;
         }
+    }
+
+    private void Start()
+    {
+        InitializeRulesDropdown();
     }
 
     private int CheckInput(TMP_InputField inputField)
@@ -46,6 +53,17 @@ public class UIManager : MonoBehaviour
             inputField.text = maxSizeUI.ToString();
             return maxSizeUI;
         }
+    }
+
+    private void InitializeRulesDropdown()
+    {
+        rulesDropdown.ClearOptions();
+
+        List<string> ruleOptions = new List<string>();
+        ruleOptions.Add("Normal");
+        ruleOptions.Add("Spread Right");
+        ruleOptions.Add("Lazy");
+        rulesDropdown.AddOptions(ruleOptions);
     }
 
     public void SetChanceOfLifeSlider(int value)
@@ -81,10 +99,14 @@ public class UIManager : MonoBehaviour
         minSizeUI = min;
         maxSizeUI = max;
     }
-
     
     public void CloseApplication()
     {
         Application.Quit();
+    }
+
+    public int GetRuleValue()
+    {
+        return rulesDropdown.value;
     }
 }
